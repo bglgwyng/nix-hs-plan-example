@@ -57,17 +57,14 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1754977391,
-        "narHash": "sha256-RDFmbBOb4V4OvIwkgnYPkb6VcTIn6z7Eq4URbYCp0S0=",
-        "owner": "bglgwyng",
-        "repo": "nix-hs-plan",
-        "rev": "e56025bc9f2d72c8194d49a429fd7536f5d95872",
-        "type": "github"
+        "lastModified": 1757057771,
+        "narHash": "sha256-HNHoXEBx3Gw5nIwBpfp7xqqhLOyAr1gpMxv3CgbDxM0=",
+        "path": "/home/bglgwyng/Documents/GitHub/nix-hs-plan",
+        "type": "path"
       },
       "original": {
-        "owner": "bglgwyng",
-        "repo": "nix-hs-plan",
-        "type": "github"
+        "path": "/home/bglgwyng/Documents/GitHub/nix-hs-plan",
+        "type": "path"
       }
     },
     "nixpkgs": {
