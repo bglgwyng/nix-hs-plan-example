@@ -5,7 +5,8 @@
     flake-parts.url = "github:hercules-ci/flake-parts";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
     haskell-flake.url = "github:srid/haskell-flake";
-    nix-hs-plan.url = "github:bglgwyng/nix-hs-plan";
+    # nix-hs-plan.url = "github:bglgwyng/nix-hs-plan";
+    nix-hs-plan.url = "path:/home/bglgwyng/Documents/GitHub/nix-hs-plan";
   };
 
   outputs = inputs@{ flake-parts, ... }:
@@ -20,6 +21,7 @@
       ];
       systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" "x86_64-darwin" ];
       perSystem = { config, self', inputs', pkgs, system, ... }:
+        let haskellPackages = pkgs.haskell.packages.ghc9101; in
         {
           # Per-system attributes can be defined here. The self' and inputs'
           # module parameters provide easy access to attributes of the same
@@ -35,30 +37,22 @@
             ];
           };
 
-          # Unwrapped GHC without extra packages
-          haskellProjects.default =
+          devShells.default = pkgs.mkShell {
+            packages =
+              let
+                hpkgs = (inputs.nix-hs-plan.packages-from-plan-json {
+                  inherit pkgs haskellPackages;
+                  plan-json = builtins.fromJSON (builtins.readFile ./plans/plan-${pkgs.system}.json);
+                });
+              in
+              [ (haskellPackages.ghcWithPackages (_: builtins.attrValues hpkgs)) ];
+          };
+          apps.generate-plan-json =
             {
-              projectRoot = ./.;
-              basePackages = pkgs.haskellPackages;
-              packages = (inputs.nix-hs-plan.packages-from-plan-json {
-                inherit pkgs;
-                plan-json = builtins.fromJSON (builtins.readFile ./plans/plan-${system}.json);
-              });
-              defaults.settings.all = {
-                check = false;
-              };
-              devShell = {
-                hlsCheck.enable = false;
-                tools =
-                  _: with config.haskellProjects.default.basePackages; {
-                    cabal-install = cabal-install;
-                    ghcid = ghcid;
-                    hlint = hlint;
-                    haskell-language-server = haskell-language-server;
-                  };
-                hoogle = false;
-              };
+              type = "app";
+              program = inputs.nix-hs-plan.generate-plan-json { inherit pkgs haskellPackages; };
             };
+
         };
     };
 }
